@@ -53,10 +53,8 @@ const Message = ({ data, userId, mutate }) => {
       <div className="flex w-full flex-col justify-start gap-1">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <p className="text-base font-semibold first-letter:capitalize">
-              {username}
-            </p>
-            <p className="text-xs font-semibold text-slate-400">
+            <p className="text-base font-semibold">{username}</p>
+            <p className="text-[10px] font-semibold text-slate-400">
               {dayjs(date).format("DD/MM/YYYY hh:mm A")}
             </p>
           </div>
@@ -68,7 +66,7 @@ const Message = ({ data, userId, mutate }) => {
                 className="cursor-pointer hover:text-discord"
               />
               <LiaEdit
-                onClick={() => setEdit(true)}
+                onClick={() => setEdit(!edit)}
                 className="cursor-pointer hover:text-discord"
               />
             </div>

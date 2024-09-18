@@ -30,7 +30,7 @@ const Channels = ({ data }) => {
                     navigate("/channel/" + _id);
                   }, 1000);
                 }}
-                className={`flex cursor-pointer items-center gap-3 p-2 text-slate-300 ${currentChannel === _id ? "rounded-lg bg-slate-800 text-slate-50" : ""}`}
+                className={`flex cursor-pointer items-center gap-3 rounded-xl p-2 text-slate-300 hover:bg-slate-700 ${currentChannel === _id ? "rounded-lg bg-slate-800 text-slate-50" : ""}`}
                 key={_id}
               >
                 <FaHashtag className="text-lg" />

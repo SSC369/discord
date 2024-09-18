@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { HiOutlinePlus } from "react-icons/hi2";
 import { TbMessage } from "react-icons/tb";
-import AddServerModal from "../components/addServerModal";
+import AddServerModal from "../components/AddServerModal";
 import useSWR from "swr";
 import host from "../host";
 import Cookies from "js-cookie";
@@ -10,31 +10,14 @@ import axios from "axios";
 import { LuComputer } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 
-const Servers = ({ setCurrentServer }) => {
+const Servers = ({ setCurrentServer, data, isLoading, mutate }) => {
   const [addServerModal, setAddServerModal] = useState(false);
   const token = Cookies.get("discordToken");
 
   const navigate = useNavigate();
 
-  const fetcher = async (url) => {
-    try {
-      const res = await axios.get(url, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      if (res.status === 200) {
-        return res.data.servers;
-      }
-    } catch (error) {
-      toast.error(error.response.data.message, { duration: 1000 });
-    }
-  };
-
-  const { data, isLoading } = useSWR(host + "/server", fetcher);
-
   return (
-    <div className="w-[100px] pt-4 text-white">
+    <div className="w-[100px] px-3 pt-4 text-white">
       <ul className="flex list-none flex-col items-center gap-5">
         <li className="cursor-pointer rounded-full bg-slate-700 p-3">
           <TbMessage className="text-3xl" />
@@ -78,6 +61,7 @@ const Servers = ({ setCurrentServer }) => {
       <AddServerModal
         isOpen={addServerModal}
         onClose={() => setAddServerModal(false)}
+        mutate={mutate}
       />
     </div>
   );

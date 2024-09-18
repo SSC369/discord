@@ -11,7 +11,7 @@ const Modal = ({ children, onClose }) => {
       onClick={(e) => handleClose(e)}
       className="fixed inset-0 z-10 flex items-end justify-center bg-[rgba(0,0,0,0.5)]"
     >
-      <div className="relative flex h-[80vh] w-full max-w-[800px] flex-col rounded-t-xl bg-slate-800 p-4">
+      <div className="relative flex h-[80vh] w-full max-w-[600px] flex-col rounded-t-xl bg-slate-800 p-4">
         <div className="absolute right-[10px] top-[10px] cursor-pointer text-xl text-slate-200">
           <RxCross2 onClick={onClose} />
         </div>

@@ -2,15 +2,13 @@ const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-module.exports.register = async (req, res) => {
+const register = async (req, res) => {
   try {
     const { username, password, email } = req.body;
     //check that is there a same username exits
     const usernameCheck = await User.findOne({ username });
     if (usernameCheck) {
-      return res
-        .status(400)
-        .json({ message: "Username already used", status: false });
+      return res.status(400).json({ message: "Username already used" });
     }
 
     //check that is there a same email exists
@@ -40,13 +38,13 @@ module.exports.register = async (req, res) => {
     };
     const jwtToken = jwt.sign(payload, secretKey);
 
-    return res.status(201).json({ status: true, jwtToken });
+    return res.status(201).json({ jwtToken });
   } catch (error) {
-    return res.status(500).json({ message: "Server issue :(", status: false });
+    return res.status(500).json({ message: error.message });
   }
 };
 
-module.exports.login = async (req, res, next) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -60,7 +58,7 @@ module.exports.login = async (req, res, next) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid)
-      return res.json({ message: "Incorrect Password :(", status: false });
+      return res.status(400).json({ message: "Incorrect Password :(" });
 
     const secretKey = "SSC";
     const payload = {
@@ -68,15 +66,15 @@ module.exports.login = async (req, res, next) => {
       email,
       userId: user._id,
     };
-    const jwtToken = await jwt.sign(payload, secretKey);
+    const jwtToken = jwt.sign(payload, secretKey);
 
     return res.status(200).json({ jwtToken });
   } catch (error) {
-    return res.status(500).json({ message: "Server issue :(" });
+    return res.status(500).json({ message: error.message });
   }
 };
 
-module.exports.editProfile = async (req, res) => {
+const editProfile = async (req, res) => {
   try {
     const { username, password, profileImage } = req.body;
     const { email } = req.user;
@@ -104,18 +102,47 @@ module.exports.editProfile = async (req, res) => {
     res.status(200).json({ message: "Profile updated successfully", jwtToken });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Server issue :(" });
+    return res.status(500).json({ message: error.message });
   }
 };
 
-module.exports.userProfile = async (req, res) => {
+const userProfile = async (req, res) => {
   try {
     const { userId } = req.user;
     const user = await User.findById(userId);
 
     return res.status(200).json({ user });
   } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({ message: "Server issue :(" });
+    return res.status(500).json({ message: error.message });
   }
+};
+
+//fetch users by username
+
+const fetchUsers = async (req, res) => {
+  try {
+    const { name } = req.query;
+
+    const users = await User.find();
+    if (!name) return res.status(200).json({ users });
+
+    const filteredUsers = users.filter((u) => {
+      const { username } = u;
+      if (username.toLowerCase().includes(name.toLowerCase())) {
+        return u;
+      }
+    });
+    console.log(filteredUsers);
+    res.status(200).json({ users: filteredUsers });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  register,
+  login,
+  editProfile,
+  userProfile,
+  fetchUsers,
 };

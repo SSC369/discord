@@ -129,7 +129,7 @@ const Channel = () => {
         </div>
       </div>
 
-      <div className="flex w-full max-w-[800px] flex-grow flex-col justify-end gap-2 self-center rounded-t-3xl bg-slate-800 p-3 pb-[80px] text-slate-100">
+      <div className="flex w-full max-w-[800px] flex-grow flex-col justify-end gap-2 self-center rounded-t-3xl bg-slate-800 p-4 pb-[80px] text-slate-100">
         <div className="flex w-full max-w-[600px] flex-col gap-2 self-center">
           <div className="w-fit rounded-full bg-slate-700 p-4 text-3xl">
             <FaHashtag />
@@ -172,7 +172,7 @@ const Channel = () => {
           className="hidden"
           type="file"
         />
-        <div className="flex flex-grow items-center justify-center rounded-3xl bg-slate-900">
+        <div className="flex flex-grow items-center justify-center rounded-3xl bg-slate-900 px-2">
           <input
             value={message}
             onChange={(e) => {

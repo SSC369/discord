@@ -15,6 +15,7 @@ const ServerSchema = new mongoose.Schema({
       ban: { type: Boolean, default: false },
     },
   ],
+  inviteCode: { type: String },
 });
 
 module.exports = mongoose.model("Server", ServerSchema);

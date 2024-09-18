@@ -14,12 +14,20 @@ import { app } from "../utils/firebase";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
+import { PiWarningCircleFill } from "react-icons/pi";
+import Modal from "./Modal";
+import { FaArrowLeft } from "react-icons/fa6";
+import { Navigate, useNavigate } from "react-router-dom";
 
-const AddServerModal = ({ isOpen, onClose }) => {
+const AddServerModal = ({ isOpen, onClose, mutate }) => {
   const [file, setFile] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [serverName, setServerName] = useState("");
+  const [joinServerModal, setJoinServerModal] = useState(false);
+  const [inviteLink, setInviteLink] = useState("");
   const discordToken = Cookies.get("discordToken");
+  const [errorMessage, setErrorMessage] = useState(false);
+
   const uploadFile = () => {
     const storage = getStorage(app);
     const name = new Date() + file.name;
@@ -63,6 +71,8 @@ const AddServerModal = ({ isOpen, onClose }) => {
     }
   }, [file]);
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -79,10 +89,18 @@ const AddServerModal = ({ isOpen, onClose }) => {
       );
       if (res.status === 201) {
         toast.success(res.data.message, { duration: 1000 });
+        mutate();
         setServerName("");
         setImageUrl("");
         onClose();
       }
+    } catch (error) {
+      toast.error(error.response.data.message, { duration: 1000 });
+    }
+  };
+
+  const handleJoinSevrer = () => {
+    try {
     } catch (error) {
       toast.error(error.response.data.message, { duration: 1000 });
     }
@@ -177,13 +195,95 @@ const AddServerModal = ({ isOpen, onClose }) => {
 
                 <button
                   type="submit"
-                  className="mt-4 h-[50px] w-full rounded-3xl bg-discord"
+                  className="mt-4 h-[50px] w-full rounded-3xl bg-discord text-sm font-semibold"
                 >
                   Create Server
                 </button>
+
+                <p className="my-3 mt-4 text-center text-lg font-semibold">
+                  Have an invite already?
+                </p>
+                <div
+                  onClick={() => setJoinServerModal(true)}
+                  className="flex h-[50px] w-full items-center justify-center rounded-3xl bg-discord text-sm font-semibold"
+                >
+                  <p>Join a Server</p>
+                </div>
               </div>
             </div>
           </form>
+          {joinServerModal && (
+            <Modal>
+              <button
+                onClick={() => {
+                  setJoinServerModal(false);
+                  onClose();
+                }}
+              >
+                <FaArrowLeft className="text-xl" />
+              </button>
+
+              <h1 className="text-center text-xl font-bold">
+                Join an existing server
+              </h1>
+              <p className="mt-2 text-center text-sm font-semibold text-slate-400">
+                Enter an invite below to join an existing server
+              </p>
+
+              <div className="mt-4 flex flex-col">
+                <label className="text-sm font-semibold text-slate-300">
+                  Invite Link
+                </label>
+                <div className="mt-2 flex items-center rounded-2xl bg-slate-950">
+                  <input
+                    onBlur={(e) => {
+                      if (e.target.value === "") {
+                        setErrorMessage(true);
+                      }
+                    }}
+                    type="text"
+                    placeholder="https://discord.gg/htkzmak"
+                    value={inviteLink}
+                    onChange={(e) => {
+                      setErrorMessage(false);
+                      setInviteLink(e.target.value);
+                      if (e.target.value === "") {
+                        setErrorMessage(true);
+                      }
+                    }}
+                    className="h-[50px] w-[90%] bg-transparent p-2 pl-3 text-sm outline-none placeholder:font-semibold"
+                  />
+                  {serverName && (
+                    <button className="flex w-[10%] items-center justify-center">
+                      <IoCloseCircle
+                        onClick={() => setInviteLink("")}
+                        className="text-2xl text-slate-300"
+                      />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {errorMessage && (
+                <div className="mt-2 flex items-center gap-1 text-red-500">
+                  <PiWarningCircleFill className="" />
+
+                  <p className="text-xs font-semibold">
+                    Please enter a valid invite link or invite code.
+                  </p>
+                </div>
+              )}
+
+              <p className="mt-2 text-xs font-semibold text-slate-400">
+                Invites should look like https://discord.gg/htkzmak or
+                https://discord.gg/cool-people
+              </p>
+
+              <button className="mt-4 h-[50px] w-full rounded-3xl bg-discord text-sm font-semibold">
+                Join with Invite Link
+              </button>
+            </Modal>
+          )}
         </div>
       )}
     </>

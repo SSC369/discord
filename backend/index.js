@@ -25,11 +25,13 @@ const userRoutes = require("./routes/userRoutes");
 const serverRoutes = require("./routes/serverRoutes");
 const channelRoutes = require("./routes/channelRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+const invitationRoutes = require("./routes/invitationRoutes");
 
 app.use(userRoutes);
 app.use(serverRoutes);
 app.use(channelRoutes);
 app.use(messageRoutes);
+app.use(invitationRoutes);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
@@ -41,10 +43,8 @@ const io = socketIo(server, {
 });
 
 global.onlineUsers = new Map();
-
 io.on("connection", (socket) => {
   socket.on("userOnline", ({ serverId, userId }) => {
-    console.log(userId);
     // Add user to the server's online list
     if (onlineUsers[serverId]) {
       onlineUsers[serverId].add(userId);
@@ -54,7 +54,7 @@ io.on("connection", (socket) => {
     }
     socket.join(serverId);
     // Notify others in the server
-    console.log(onlineUsers);
+
     io.to(serverId).emit("onlineUsersCount", onlineUsers[serverId].size);
   });
 

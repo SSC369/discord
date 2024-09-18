@@ -40,7 +40,6 @@ const Login = () => {
     try {
       setLoading(true);
       if (handleValidation()) {
-        console.log();
         const url = import.meta.env.VITE_BACKEND_URL + "/login";
 
         const response = await axios.post(url, {
@@ -48,10 +47,8 @@ const Login = () => {
           email,
         });
 
-        const { data } = response;
-
         if (response.status === 200) {
-          Cookies.set("discordToken", data.jwtToken);
+          Cookies.set("discordToken", response.data?.jwtToken);
           setFormData({
             password: "",
             email: "",
