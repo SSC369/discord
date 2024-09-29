@@ -4,12 +4,12 @@ const {
   register,
   login,
   userProfile,
-  fetchUsers,
+  fetchInviteUsers,
 } = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 router.post("/register", register);
 router.post("/login", login);
 router.get("/profile", authMiddleware, userProfile);
-router.get("/users", fetchUsers);
+router.get("/invite/users/:serverId", fetchInviteUsers);
 module.exports = router;

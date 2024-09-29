@@ -70,50 +70,50 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-dvh min-w-[300px] flex-col items-center justify-center bg-white">
+    <div className="flex min-h-dvh min-w-[300px] flex-col items-center justify-center bg-slate-900">
       <form
         onSubmit={handleSubmit}
-        className="flex w-4/5 min-w-[300px] max-w-md flex-col gap-3 rounded-2xl bg-white p-8 text-sm shadow-2xl"
+        className="flex w-4/5 min-w-[300px] max-w-md flex-col gap-3 rounded-2xl bg-slate-800 p-8 text-sm shadow-2xl"
       >
-        <h1 className="mb-3 text-2xl font-bold text-black">
+        <h1 className="mb-3 text-2xl font-bold text-white">
           Discord <span className="text-discord">Login</span>
         </h1>
-        <label className="font-semibold text-black">Email</label>
+        <label className="font-semibold text-slate-200">Email</label>
 
-        <div className="flex h-12 items-center rounded-lg border-2 border-gray-300 pl-2 transition focus-within:border-blue-500">
-          <IoMdMail className="mr-2" size={20} />
+        <div className="flex h-12 items-center rounded-lg border-2 border-gray-600 pl-2 transition">
+          <IoMdMail className="mr-2 text-discord" size={20} />
           <input
             onChange={handleChange}
             name="email"
             value={formData.email}
             type="email"
-            className="ml-2 h-full w-[80%] border-none focus:outline-none"
+            className="ml-2 h-full w-[80%] border-none bg-transparent text-slate-200 outline-none placeholder:font-semibold"
             placeholder="Enter your Email"
           />
         </div>
 
-        <label className="font-semibold text-black">Password</label>
+        <label className="font-semibold text-slate-200">Password</label>
 
-        <div className="flex h-12 items-center rounded-lg border-2 border-gray-300 pl-2 transition focus-within:border-blue-500">
-          <RiLock2Line className="mr-2" size={20} />
+        <div className="flex h-12 items-center rounded-lg border-2 border-gray-600 pl-2 transition">
+          <RiLock2Line className="mr-2 text-discord" size={20} />
           <input
             onChange={handleChange}
             name="password"
             value={formData.password}
             type={showPassword ? "text" : "password"}
-            className="ml-2 h-full w-full border-none focus:outline-none"
+            className="ml-2 h-full w-full border-none bg-transparent text-slate-200 outline-none placeholder:font-semibold"
             placeholder="Enter your Password"
           />
           {showPassword ? (
             <AiOutlineEyeInvisible
               onClick={() => setShowPassword(!showPassword)}
-              className="mr-2 cursor-pointer"
+              className="mr-2 cursor-pointer text-discord"
               size={20}
             />
           ) : (
             <AiOutlineEye
               onClick={() => setShowPassword(!showPassword)}
-              className="mr-2 cursor-pointer"
+              className="mr-2 cursor-pointer text-discord"
               size={20}
             />
           )}
@@ -138,10 +138,10 @@ const Login = () => {
             "Submit"
           )}
         </button>
-        <p className="text-center text-sm text-black">
+        <p className="text-center text-sm font-semibold text-slate-200">
           Dont have an account?
           <span
-            className="mx-2 cursor-pointer text-discord"
+            className="mx-2 cursor-pointer font-bold text-discord"
             onClick={() => navigate("/register")}
           >
             Register

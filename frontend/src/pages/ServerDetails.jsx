@@ -24,6 +24,7 @@ import { io } from "socket.io-client";
 import { MdOutlineMailOutline, MdOutlineRestore } from "react-icons/md";
 import { jwtDecode } from "jwt-decode";
 import AlertModal from "../components/AlertModal";
+import Friends from "./InviteFriends";
 
 const ServerDetails = ({
   currentServer,
@@ -404,6 +405,16 @@ const ServerDetails = ({
               </button>
             )}
           </div>
+
+          <Friends
+            close={() => {
+              setInviteModal(false);
+              setFriendName("");
+            }}
+            inviterUserId={userId}
+            query={friendName}
+            serverId={currentServer}
+          />
         </Modal>
       )}
 

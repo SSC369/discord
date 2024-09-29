@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const Server = require("../models/serverModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -119,21 +120,34 @@ const userProfile = async (req, res) => {
 
 //fetch users by username
 
-const fetchUsers = async (req, res) => {
+const fetchInviteUsers = async (req, res) => {
   try {
     const { name } = req.query;
+    const { serverId } = req.params;
 
-    const users = await User.find();
-    if (!name) return res.status(200).json({ users });
+    // Fetch all users and the server concurrently
+    const [users, server] = await Promise.all([
+      User.find(),
+      Server.findById(serverId),
+    ]);
 
-    const filteredUsers = users.filter((u) => {
-      const { username } = u;
-      if (username.toLowerCase().includes(name.toLowerCase())) {
-        return u;
-      }
+    // Filter users by name if the name is provided
+    let filteredUsers = users;
+    if (name) {
+      filteredUsers = users.filter((u) =>
+        u.username.toLowerCase().includes(name.toLowerCase())
+      );
+    }
+
+    // Map the users to include the 'invite' status
+    const result = filteredUsers.map((u) => {
+      const isMember = server.members.some((m) => m.userId.equals(u._id));
+
+      return { ...u._doc, invite: !isMember };
     });
-    console.log(filteredUsers);
-    res.status(200).json({ users: filteredUsers });
+
+    // Send the response with the result array
+    return res.status(200).json({ users: result });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -144,5 +158,5 @@ module.exports = {
   login,
   editProfile,
   userProfile,
-  fetchUsers,
+  fetchInviteUsers,
 };
