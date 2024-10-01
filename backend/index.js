@@ -58,6 +58,15 @@ io.on("connection", (socket) => {
     io.to(serverId).emit("onlineUsersCount", onlineUsers[serverId].size);
   });
 
+  socket.on("deleteMessage", ({ messageId, channelId }) => {
+    // Notify other users in the channel that a message was deleted
+    socket.to(channelId).emit("messageDeleted", { messageId });
+  });
+
+  socket.on("editMessage", (data) => {
+    io.to(data.channelId).emit("editMessage", data);
+  });
+
   // User joins a channel
   socket.on("joinChannel", ({ channelId }) => {
     socket.join(channelId); // User joins a channel room

@@ -7,7 +7,7 @@ import { HiUser } from "react-icons/hi2";
 import { LiaEdit } from "react-icons/lia";
 import host from "../host";
 
-const Message = ({ data, userId, mutate }) => {
+const Message = ({ data, userId, mutate, socket }) => {
   const { message, username, date } = data;
   const [edit, setEdit] = useState(false);
   const [editMessage, setEditMessage] = useState(message);
@@ -20,9 +20,9 @@ const Message = ({ data, userId, mutate }) => {
         date: new Date(),
       });
       if (res.status === 200) {
-        setEdit(false);
         mutate();
-        toast.success(res.data?.message, { duration: 1000 });
+        setEdit(false);
+        socket.current.emit("editMessage", { ...data, message: editMessage });
       }
     } catch (error) {
       toast.error(error.response.data.message, { duration: 1000 });
@@ -31,11 +31,16 @@ const Message = ({ data, userId, mutate }) => {
 
   const handleDelete = async () => {
     try {
-      const url = host + "/message/" + data._id;
+      const id = data._id.toString();
+      const url = host + "/message/" + id;
       const res = await axios.delete(url);
       if (res.status === 200) {
         mutate();
-        toast.success(res.data?.message, { duration: 1000 });
+        // Emit a delete event through Socket.IO
+        socket.current.emit("deleteMessage", {
+          messageId: id,
+          channelId: data.channelId,
+        });
       }
     } catch (error) {
       toast.error(error.response.data.message, { duration: 1000 });

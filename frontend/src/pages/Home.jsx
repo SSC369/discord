@@ -55,7 +55,10 @@ const Home = () => {
     }
   };
 
-  const { data: invites } = useSWR(host + "/invite", invitationsFetcher);
+  const { data: invites, mutate: mutateInvitations } = useSWR(
+    host + "/invite",
+    invitationsFetcher,
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -69,9 +72,7 @@ const Home = () => {
         if (res.status === 200) {
           setUser(res.data?.user);
         }
-      } catch (error) {
-        toast.error(error.response.data.message, { duration: 1000 });
-      }
+      } catch (error) {}
     };
     fetchUser();
   }, []);
@@ -86,6 +87,7 @@ const Home = () => {
       });
       if (res.status === 200) {
         toast.success(res.data.message, { duration: 1000 });
+        mutateInvitations();
       }
     } catch (error) {
       toast.error(error.response.data.message, { duration: 1000 });
@@ -99,6 +101,7 @@ const Home = () => {
       const res = await axios.delete(url);
       if (res.status === 200) {
         toast.success(res.data.message, { duration: 1000 });
+        mutateInvitations();
       }
     } catch (error) {
       toast.error(error.response.data.message, { duration: 1000 });
@@ -143,12 +146,18 @@ const Home = () => {
 
           <div
             onClick={() => setNotificationModal(true)}
-            className="flex flex-col items-center"
+            className="relative flex flex-col items-center"
           >
             <IoNotifications className="text-2xl text-slate-400" />
             <p className="text-xs font-semibold text-slate-300">
               Notifications
             </p>
+
+            {invites?.length > 0 && (
+              <p className="absolute right-2 top-[-6px] flex h-[20px] w-[20px] items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white">
+                {invites?.length}
+              </p>
+            )}
           </div>
 
           <div

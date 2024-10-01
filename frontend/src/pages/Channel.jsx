@@ -61,9 +61,6 @@ const Channel = () => {
   const { data, isLoading, error, mutate } = useSWR(
     host + "/messages/" + id,
     fetcher,
-    {
-      onError: (err) => toast.error(err.message),
-    },
   );
 
   const handleSendMessage = async () => {
@@ -91,8 +88,8 @@ const Channel = () => {
         },
       );
       if (res.status === 201) {
-        toast.success("Message sent", { duration: 1000 });
         setMessage("");
+        mutate();
       }
     } catch (error) {
       toast.error(error.message, { duration: 1000 });
@@ -105,11 +102,33 @@ const Channel = () => {
       socket.current.on("message", (data) => {
         mutate((messages) => [...messages, { ...data }], false);
       });
+
+      socket.current.off("editMessage");
+      socket.current.on("editMessage", (updatedMessage) => {
+        mutate(
+          (messages) =>
+            messages.map((m) =>
+              m._id === updatedMessage._id ? updatedMessage : m,
+            ),
+          false,
+        );
+      });
+
+      socket.current.off("messageDeleted");
+      socket.current.on("messageDeleted", ({ messageId }) => {
+        mutate(
+          (messages) => messages.filter((m) => m._id !== messageId),
+          false,
+        );
+      });
     }
+
     return () => {
-      socket.current.off("message"); // Clean up to avoid duplicates
+      socket.current.off("message");
+      socket.current.off("messageDeleted");
+      socket.current.off("editMessage");
     };
-  });
+  }, []);
 
   const handleEmoji = (e) => {
     setMessage((prev) => prev + e.emoji);
@@ -152,7 +171,13 @@ const Channel = () => {
         <ul className="mt-4 flex w-full max-w-[600px] flex-col gap-4 self-center">
           {data?.map((m) => {
             return (
-              <Message mutate={mutate} key={v4()} userId={userId} data={m} />
+              <Message
+                socket={socket}
+                mutate={mutate}
+                key={v4()}
+                userId={userId}
+                data={m}
+              />
             );
           })}
         </ul>

@@ -32,16 +32,24 @@ const acceptInvitation = async (req, res) => {
   try {
     const { id } = req.params;
     const { receiverUserId, serverId } = req.body;
-    const server = await Server.findById(serverId);
 
-    const isMember = server.members.some((m) => m.userId === receiverUserId);
-    console.log(isMember);
+    const server = await Server.findById(serverId);
+    if (!server) {
+      return res.status(404).json({ message: "Server not found" });
+    }
+
+    // Check if the user is already a member of the server
+    const isMember = server.members.some(
+      (member) => member.userId.toString() === receiverUserId
+    );
+
     if (isMember) {
       await Invitation.findByIdAndDelete(id);
       return res.status(200).json({ message: "Already in server" });
     }
 
-    await Server.findByIdAndUpdate(new mongoose.Types.ObjectId(serverId), {
+    // Add the user to the server members
+    await Server.findByIdAndUpdate(serverId, {
       $push: {
         members: {
           userId: receiverUserId,
@@ -49,7 +57,9 @@ const acceptInvitation = async (req, res) => {
       },
     });
 
+    // Delete the invitation
     await Invitation.findByIdAndDelete(id);
+
     res.status(200).json({ message: "Invitation accepted" });
   } catch (error) {
     console.log(error);

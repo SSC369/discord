@@ -26,6 +26,18 @@ import { jwtDecode } from "jwt-decode";
 import AlertModal from "../components/AlertModal";
 import Friends from "./InviteFriends";
 
+function generateUniqueRandomString() {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+
+  setInviteCode(result);
+}
+
 const ServerDetails = ({
   currentServer,
   mutate: serversMutate,
@@ -125,18 +137,6 @@ const ServerDetails = ({
       toast.error(error.response.data.message, { duration: 1000 });
     }
   };
-
-  function generateUniqueRandomString() {
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    for (let i = 0; i < 6; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      result += characters[randomIndex];
-    }
-
-    setInviteCode(result);
-  }
 
   async function handleSaveInviteCode() {
     try {
