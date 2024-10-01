@@ -3,6 +3,7 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { Toaster } from "react-hot-toast";
 import Loader from "./components/Loader";
+import EditServer from "./pages/EditServer";
 
 // Lazy load components
 const Home = lazy(() => import("./pages/Home"));
@@ -41,6 +42,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Channel />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/server/:id"
+            element={
+              <ProtectedRoute>
+                <EditServer />
               </ProtectedRoute>
             }
           />

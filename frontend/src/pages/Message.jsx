@@ -36,7 +36,6 @@ const Message = ({ data, userId, mutate, socket }) => {
       const res = await axios.delete(url);
       if (res.status === 200) {
         mutate();
-        // Emit a delete event through Socket.IO
         socket.current.emit("deleteMessage", {
           messageId: id,
           channelId: data.channelId,

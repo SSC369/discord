@@ -26,18 +26,6 @@ import { jwtDecode } from "jwt-decode";
 import AlertModal from "../components/AlertModal";
 import Friends from "./InviteFriends";
 
-function generateUniqueRandomString() {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < 6; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    result += characters[randomIndex];
-  }
-
-  setInviteCode(result);
-}
-
 const ServerDetails = ({
   currentServer,
   mutate: serversMutate,
@@ -67,7 +55,25 @@ const ServerDetails = ({
         setOnlineUsers(count);
       });
     }
+
+    return () => {
+      if (socket.current) {
+        socket.current.disconnect();
+      }
+    };
   }, [currentServer]);
+
+  function generateUniqueRandomString() {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters[randomIndex];
+    }
+
+    setInviteCode(result);
+  }
 
   const fetchServer = async (url) => {
     try {
@@ -241,14 +247,14 @@ const ServerDetails = ({
           <div className="mt-3 flex items-center gap-4 text-sm font-medium text-slate-400">
             <div className="flex items-center">
               <GoDotFill className="mr-1 text-green-500" />
-              <span>{onlineUsers}</span>
+              <span className="mr-0.5">{onlineUsers}</span>
               <p>Online</p>
             </div>
 
             <div className="flex items-center">
               <GoDotFill className="mr-1" />
-              <span>{data?.members?.length}</span>
-              <p className="">Member</p>
+              <span className="mr-0.5">{data?.members?.length}</span>
+              <p className="">Member{data?.members?.length > 1 && "s"}</p>
             </div>
           </div>
 
@@ -281,20 +287,19 @@ const ServerDetails = ({
             <li className="cursor-pointer">Edit Server Profile</li>
           </ul>
 
-          <button
-            onClick={() => setAlertModal(true)}
-            className="mt-4 w-fit cursor-pointer self-center rounded-lg bg-discord px-3 py-2 text-xs text-white"
-          >
-            Delete Server
-          </button>
+          {data?.owner === userId && (
+            <button
+              onClick={() => setAlertModal(true)}
+              className="mt-4 w-fit cursor-pointer self-center rounded-lg bg-discord px-3 py-2 text-xs text-white"
+            >
+              Delete Server
+            </button>
+          )}
 
           <div className="mt-4 flex flex-col">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <label
-                  className="text-sm font-semibold text-slate-300"
-                  htmlFor="invite"
-                >
+                <label className="text-sm font-semibold text-slate-300">
                   Invite Code
                 </label>
                 <MdOutlineRestore
@@ -345,6 +350,7 @@ const ServerDetails = ({
               <input
                 type="text"
                 value={inviteCode}
+                onChange={(e) => setInviteCode(e.target.value)}
                 className="pointer-events-none mt-2 h-[50px] rounded-2xl bg-slate-950 p-2 pl-3 text-sm text-slate-200 outline-none placeholder:font-semibold"
               />
             )}

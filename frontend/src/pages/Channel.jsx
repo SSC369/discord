@@ -100,26 +100,18 @@ const Channel = () => {
     if (socket.current) {
       socket.current.off("message"); // Remove existing listeners
       socket.current.on("message", (data) => {
-        mutate((messages) => [...messages, { ...data }], false);
+        mutate();
       });
 
       socket.current.off("editMessage");
       socket.current.on("editMessage", (updatedMessage) => {
-        mutate(
-          (messages) =>
-            messages.map((m) =>
-              m._id === updatedMessage._id ? updatedMessage : m,
-            ),
-          false,
-        );
+        mutate();
       });
 
       socket.current.off("messageDeleted");
       socket.current.on("messageDeleted", ({ messageId }) => {
-        mutate(
-          (messages) => messages.filter((m) => m._id !== messageId),
-          false,
-        );
+        console.log(messageId);
+        mutate();
       });
     }
 

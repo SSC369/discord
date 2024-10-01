@@ -53,13 +53,19 @@ io.on("connection", (socket) => {
       onlineUsers[serverId].add(userId);
     }
     socket.join(serverId);
-    // Notify others in the server
 
     io.to(serverId).emit("onlineUsersCount", onlineUsers[serverId].size);
   });
 
+  socket.on("joinChannel", ({ channelId }) => {
+    socket.join(channelId);
+  });
+
+  socket.on("leaveChannel", ({ channelId }) => {
+    socket.leave(channelId);
+  });
+
   socket.on("deleteMessage", ({ messageId, channelId }) => {
-    // Notify other users in the channel that a message was deleted
     socket.to(channelId).emit("messageDeleted", { messageId });
   });
 
@@ -67,18 +73,8 @@ io.on("connection", (socket) => {
     io.to(data.channelId).emit("editMessage", data);
   });
 
-  // User joins a channel
-  socket.on("joinChannel", ({ channelId }) => {
-    socket.join(channelId); // User joins a channel room
-  });
-
-  socket.on("leaveChannel", ({ channelId }) => {
-    socket.leave(channelId);
-  });
-
-  // Handling sending messages to a channel
   socket.on("sendMessage", ({ channelId, message, userId, date, username }) => {
-    io.to(channelId).emit("message", { userId, message, date, username }); // Send to specific room
+    io.to(channelId).emit("message", { userId, message, date, username });
   });
 
   socket.on("serverDisconnect", ({ serverId, userId }) => {

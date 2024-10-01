@@ -19,6 +19,18 @@ import Modal from "./Modal";
 import { FaArrowLeft } from "react-icons/fa6";
 import { Navigate, useNavigate } from "react-router-dom";
 
+function generateUniqueRandomString() {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+
+  return result;
+}
+
 const AddServerModal = ({ isOpen, onClose, mutate }) => {
   const [file, setFile] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -80,7 +92,11 @@ const AddServerModal = ({ isOpen, onClose, mutate }) => {
       const url = host + "/server";
       const res = await axios.post(
         url,
-        { name: serverName, image: imageUrl },
+        {
+          name: serverName,
+          image: imageUrl,
+          inviteCode: generateUniqueRandomString(),
+        },
         {
           headers: {
             Authorization: discordToken,
