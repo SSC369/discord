@@ -1,17 +1,13 @@
 const Server = require("../models/serverModel");
 const Channel = require("../models/channelModel");
 const Message = require("../models/messageModel");
+const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
 const createServer = async (req, res) => {
   try {
     const { name, image } = req.body;
     const { userId } = req.user;
-
-    //check if server name is already exist
-    // const server = await Server.findOne({ name });
-    // if (server)
-    //   return res.status(400).json({ message: "Name already in use!" });
 
     await Server.create({
       name,
@@ -34,8 +30,25 @@ const fetchServer = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Find the server by ID
     const server = await Server.findById(id);
-    return res.status(200).json({ server });
+
+    const membersData = await Promise.all(
+      server?.members.map(async (m) => {
+        const { userId } = m;
+        const { profileImage, username } = await User.findById(userId);
+
+        return {
+          ...m._doc,
+          profileImage,
+          username,
+        };
+      })
+    );
+
+    return res
+      .status(200)
+      .json({ server: { ...server._doc, members: membersData } });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -43,6 +56,18 @@ const fetchServer = async (req, res) => {
 
 const updateServer = async (req, res) => {
   try {
+    const { id } = req.params;
+
+    const { name, image } = req.body;
+
+    await Server.findByIdAndUpdate(id, {
+      $set: {
+        name,
+        image,
+      },
+    });
+
+    res.status(200).json({ message: "Server updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -111,4 +136,5 @@ module.exports = {
   fetchServer,
   createInviteCode,
   deleteServer,
+  updateServer,
 };

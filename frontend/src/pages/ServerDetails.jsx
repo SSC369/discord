@@ -25,6 +25,7 @@ import { MdOutlineMailOutline, MdOutlineRestore } from "react-icons/md";
 import { jwtDecode } from "jwt-decode";
 import AlertModal from "../components/AlertModal";
 import Friends from "./InviteFriends";
+import { useNavigate } from "react-router-dom";
 
 const ServerDetails = ({
   currentServer,
@@ -42,6 +43,7 @@ const ServerDetails = ({
   const [loading, setLoading] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState(0);
 
+  const navigate = useNavigate();
   const token = Cookies.get("discordToken");
   const { userId } = jwtDecode(token);
   const socket = useRef();
@@ -284,7 +286,12 @@ const ServerDetails = ({
             >
               Create Channel
             </li>
-            <li className="cursor-pointer">Edit Server Profile</li>
+            <li
+              onClick={() => navigate("/server/" + currentServer)}
+              className="cursor-pointer"
+            >
+              Edit Server Profile
+            </li>
           </ul>
 
           {data?.owner === userId && (
